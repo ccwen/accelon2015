@@ -3,7 +3,6 @@ var ReactPanels=require("react-panels");
 var PureRenderMixin=React.addons.PureRenderMixin;
 var E=React.createElement;
 var Reflux=require("reflux");
-var update=React.addons.update;
 
 var Panel = ReactPanels.Panel;
 var Tab = ReactPanels.Tab;
@@ -18,7 +17,7 @@ var TextTab=require("./tabs/texttab");
 var action=require("./actions/texts");
 
 var RightPanel=React.createClass({
-	mixins:[PureRenderMixin,Reflux.listenTo(store,"onData")]
+	mixins:[Reflux.listenTo(store,"onData")]
 	,getInitialState:function() {
 		return {tabs:defaultTabs}
 	}
@@ -33,21 +32,17 @@ var RightPanel=React.createClass({
     action.remove(tabkey);
   }
   ,onData:function(data,newly){
-  	if (!Object.keys(data).length) {
+  	if (!data.length) {
   		this.setState({tabs:defaultTabs})
   	} else {
-  		var tabs=[];
-  		for (var i in data) {
-  			tabs.push(update(data[i],{$merge:{key:i}}));
-  		}
-  		this.setState({tabs:tabs});
+  		this.setState({tabs:data});
   	}
   }
-  ,renderTab:function(tab) {
+  ,renderTab:function(tab,idx) {
   	if (React.isValidElement(tab)) {
   		return tab;
   	} else {
-			return E(TextTab,{title:tab.title,text:tab.text});
+			return E(TextTab,{key:idx,title:tab.title,text:tab.text});
   	}
   },
 	render:function() {

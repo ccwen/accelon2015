@@ -8,7 +8,7 @@ var TocContent=React.createClass({
 	mixin:[PureRenderMixin]
 	,opentext:function(e) {
 		var key=Math.random().toString().substr(3,6);
-		action.add(key,{title:key,text:"content of "+key});
+		action.add({key:key,title:'T'+key,text:"content of "+key});
 	},
 	render:function() {
 		return E("div",{},

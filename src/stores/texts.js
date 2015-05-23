@@ -2,14 +2,25 @@ var Reflux=require("reflux");
 var actions=require("../actions/texts");
 var Texts=Reflux.createStore({
 	listenables:actions
-	,texts:{}
-	,onAdd:function(key,trait) {
-		this.texts[key]=trait;
-		this.trigger(this.texts,key);
+	,texts:[]
+	,find:function(key) {
+		for (var i=0;i<this.texts.length;i++) {
+			if (this.texts[i].key==key) return i;
+		}
+		return -1;
+	}
+	,add_replace:function(trait) {
+		var i=this.find(trait.key);
+		i>-1? (this.texts[i]=trait) : (this.texts.push(trait));
+	}
+	,onAdd:function(trait) {
+		this.add_replace(trait);
+		this.trigger(this.texts,trait.key);
 	}
 	,onRemove:function(key) {
-		delete this.texts[key];
-		this.trigger(this.texts);
+		var i=this.find(key);
+		if (i>-1) this.texts.splice(i,1);
+		this.trigger(this.texts,key);
 	}
 })
 module.exports=Texts;
