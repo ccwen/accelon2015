@@ -8,13 +8,13 @@ var Panel = ReactPanels.Panel;
 var Tab = ReactPanels.Tab;
 var Content = ReactPanels.Content;
 
+var TocTab=require("./tabs/toctab");
+
 var LeftPanel=React.createClass({
 	mixins:[PureRenderMixin],
 	render:function() {
  		return <Panel theme="flexbox2">
-      <Tab title="One">
-        <Content>Content of One</Content>
-      </Tab>
+      <TocTab title="Toc"/>
       <Tab title="Two">
         <Content>Content of Two</Content>
       </Tab>
