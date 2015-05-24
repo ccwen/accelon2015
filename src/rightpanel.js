@@ -11,7 +11,7 @@ var Button = ReactPanels.Button;
 
 var store=require("./stores/texts");
 var Welcome=require("./views/welcome");
-var defaultTabs=[<Welcome/>];
+var defaultTabs=[<Welcome key="welcome"/>];
 var TextTab=require("./tabs/texttab");
 
 var action=require("./actions/texts");
@@ -42,7 +42,8 @@ var RightPanel=React.createClass({
   	if (React.isValidElement(tab)) {
   		return tab;
   	} else {
-			return E(TextTab,{key:idx,title:tab.title,text:tab.text});
+  		var component=tab.Component||TextTab;
+			return E(component,{key:idx,title:tab.title,text:tab.text});
   	}
   },
 	render:function() {
