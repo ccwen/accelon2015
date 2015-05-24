@@ -2,7 +2,6 @@ var Reflux=require("reflux");
 var actions=require("../actions/databases");
 var kde=require("ksana-database");
 var kse=require("ksana-search");
-var update=require("react").addons.update;
 
 var DBListStore=Reflux.createStore({
 	databases:[]
@@ -18,23 +17,34 @@ var DBListStore=Reflux.createStore({
 		this.trigger(this.searchable);
 	}
 	,setResult:function(fullname,hits) {
-		for (var i=0;i<this.searchable.length;i++) {
-			var db=this.searchable[i];
-			if (db.fullname===fullname) {
-				var updatedb=update(db,{$merge:{hits:hits}});
-				this.searchable.splice(i,1);
-				this.searchable=update(this.searchable,{$push:[updatedb]});
-				this.trigger(this.searchable);
-				return;
-			}
-		}
+		this.searchable=this.searchable.map(function(db){
+			if (db.fullname===fullname) db.hits=hits;
+			return db;
+		});
+		this.searchable.sort(function(a,b){
+			return b.hits-a.hits;
+		});
+
+		this.trigger(this.searchable);
+	}
+	,clearResult:function() {
+		this.searchable=this.searchable.map(function(db){
+			delete db.hits;
+			return db;
+		});
+
+		this.trigger(this.searchable);
 	}
 	,onSearch:function(tofind){
-		console.log("searching",tofind);
 		var that=this;
-		this.searchable.map(function(dbname){
-			kse.search(dbname.fullname,tofind,{},function(err,data){
-				that.setResult(dbname.fullname,data.rawresult.length);
+		
+		if (!tofind) {
+			this.clearResult();
+			return;
+		}
+		this.searchable.map(function(db){
+			kse.search(db.fullname,tofind,{},function(err,data){
+				that.setResult(db.fullname,data.rawresult.length);
 			});
 		});
 	}

@@ -4,6 +4,10 @@ var Reflux=require("reflux");
 var E=React.createElement;
 
 var action=require("../actions/databases");
+
+var styles={
+	tofind: {fontSize:"200%"}
+}
 var TextContent=React.createClass({
 	mixins:[PureRenderMixin]
 	,getInitialState:function(){
@@ -31,7 +35,8 @@ var TextContent=React.createClass({
 	}
 	,render:function() {
 		return E("div",{},
-			E("input",{ref:"tofind",onKeyPress:this.onKeyPress,onChange:this.onChange,value:this.state.tofind})
+			E("input",{ref:"tofind",style:styles.tofind,size:5,
+				onKeyPress:this.onKeyPress,onChange:this.onChange,value:this.state.tofind})
 		);
 	}
 });
