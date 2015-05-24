@@ -1,5 +1,6 @@
 var React=require("react/addons");
 var E=React.createElement;
+var PT=React.PropTypes;
 var PureRenderMixin=React.addons.PureRenderMixin;
 var Reflux=require("reflux");
 
@@ -22,7 +23,9 @@ var DBListTab=React.createClass({
 	,getInitialState:function() {
 		return {databases:[]};
 	}
-
+	,propTypes:{
+		action:PT.func.isRequired
+	}
 	,componentDidMount:function() {
 		setTimeout(function(){
 			action.list("cbeta2015");
@@ -35,7 +38,7 @@ var DBListTab=React.createClass({
 		return <Tab title="One">
         <Content>
         	<DBSearchInput />
-        	<DBList databases={this.state.databases}/>
+        	<DBList action={this.props.action} databases={this.state.databases}/>
 
         </Content>
       </Tab>

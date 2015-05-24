@@ -2,26 +2,19 @@ var React=require("react/addons");
 var PureRenderMixin=React.addons.PureRenderMixin;
 var Reflux=require("reflux");
 var E=React.createElement;
-var action=require("../actions/texts");
-var kde=require("ksana-database");
-
+var PT=React.PropTypes;
+var TreeToc=require("ksana2015-treetoc").component;
+var styles={
+	container:{overflowY:"auto",height:"99%",overflowX:"hidden"}
+}
 var TocContent=React.createClass({
-	mixin:[PureRenderMixin]
-	,opentext:function(e) {
-		var key=Math.random().toString().substr(3,6);
-		action.add({key:key,title:'T'+key,text:"content of "+key});
-	}
-	,componentDidMount:function() {
-		var r=kde.rpc.list({},function(files){
-			console.log(files.filter(function(item){return item.folder==="associat"}));
-			kde.open(files[0].fullname,function(err,data){
-				console.log(data)
-			})
-		})
+	mixins:[PureRenderMixin]
+	,propTypes:{
+		toc:PT.array.isRequired
 	}
 	,render:function() {
-		return E("div",{},
-			E("button",{onClick:this.opentext},"open text")
+		return E("div",{style:styles.container},
+			E(TreeToc,{data:this.props.toc})
 		);
 	}
 });

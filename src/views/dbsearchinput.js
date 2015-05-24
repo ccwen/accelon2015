@@ -6,7 +6,7 @@ var E=React.createElement;
 var action=require("../actions/databases");
 
 var styles={
-	tofind: {fontSize:"200%"}
+	tofind: {fontSize:"200%",borderRadius:"10px",outline:0,border: "solid 1px #dcdcdc"}
 }
 var TextContent=React.createClass({
 	mixins:[PureRenderMixin]

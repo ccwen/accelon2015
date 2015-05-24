@@ -2,24 +2,21 @@ var React=require("react/addons");
 var PureRenderMixin=React.addons.PureRenderMixin;
 
 var E=React.createElement;
-var styles={
-	dbitem:{display:"flex",fontSize:"150%",borderBottom:"solid 1px black"}
-	,name:{flex:3}
-	,hits:{flex:1}
-}
+var PT=React.PropTypes;
+var DBListItem=require("./dblistitem");
 
 var DBListContent=React.createClass({
 	mixins:[PureRenderMixin]
 	,propTypes:{
-		databases:React.PropTypes.array.isRequired
+		databases:PT.array.isRequired
+		,action:PT.func.isRequired
 	}	
-	,renderDB:function(db,idx) {
-		return <div key={idx} style={styles.dbitem}><span style={styles.name}>{db.shortname}</span>
-		<span style={styles.hits}>{db.hits||""}</span></div>
+	,renderItem:function(db,idx){
+		return <DBListItem action={this.props.action} key={idx} db={db}/>
 	}
 	,render:function() {
 		return E("div",{},
-			this.props.databases.map(this.renderDB)
+			this.props.databases.map(this.renderItem)
 		);
 	}
 });
