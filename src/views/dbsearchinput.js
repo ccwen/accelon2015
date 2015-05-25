@@ -2,7 +2,7 @@ var React=require("react/addons");
 var PureRenderMixin=React.addons.PureRenderMixin;
 var Reflux=require("reflux");
 var E=React.createElement;
-
+var PT=React.PropTypes;
 var action=require("../actions/databases");
 
 var styles={
@@ -12,6 +12,9 @@ var TextContent=React.createClass({
 	mixins:[PureRenderMixin]
 	,getInitialState:function(){
 		return {tofind:'菩提'}
+	}
+	,propTypes:{
+		onTofindChange:PT.func
 	}
 	,onKeyPress:function(e) {
 		if (e.key=="Enter") {
@@ -25,6 +28,7 @@ var TextContent=React.createClass({
 	}
 	,dosearch:function() {
 		action.search(this.state.tofind);
+		if (this.props.onTofindChange) this.props.onTofindChange(this.state.tofind);
 	}
 	,onChange:function(e) {
 		this.setState({tofind:e.target.value});

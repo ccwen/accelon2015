@@ -73,7 +73,7 @@ var TextPanel=React.createClass({
   	}
   },
 	render:function() {
- 		return <Panel ref="panel" theme="flexbox2" buttons={[this.panelbuttons()]}
+ 		return <Panel ref="panel" theme="flexbox" buttons={[this.panelbuttons()]}
       leftButtons={this.leftbuttons()} >
 	 		{this.state.tabs.map(this.renderTab)}
     </Panel>

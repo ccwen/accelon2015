@@ -11,7 +11,8 @@ var Texts=Reflux.createStore({
 	}
 	,add_replace:function(trait) {
 		var i=this.find(trait.key);
-		i>-1? (this.texts[i]=trait) : (this.texts.push(trait));
+		if (i>-1) this.texts.splice(i,1)
+	 	this.texts.push(trait);
 	}
 	,onAdd:function(trait) {
 		this.add_replace(trait);

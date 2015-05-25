@@ -21,7 +21,7 @@ var DBSearchInput=require("../views/dbsearchinput");
 var DBListTab=React.createClass({
 	mixins: [Reflux.listenTo(store,"onData"),TabWrapperMixin,PureRenderMixin]
 	,getInitialState:function() {
-		return {databases:[]};
+		return {databases:[],tofind:""};
 	}
 	,propTypes:{
 		action:PT.func.isRequired
@@ -34,12 +34,14 @@ var DBListTab=React.createClass({
 	,onData:function(data) {
 		this.setState({databases:data});
 	}	
+	,onTofindChange:function(tofind) {
+		this.setState({tofind:tofind});
+	}
 	,render:function() {
 		return <Tab title="One">
         <Content>
-        	<DBSearchInput />
-        	<DBList action={this.props.action} databases={this.state.databases}/>
-
+        	<DBSearchInput onTofindChange={this.onTofindChange} />
+        	<DBList action={this.props.action} databases={this.state.databases} tofind={this.state.tofind}/>
         </Content>
       </Tab>
 	}

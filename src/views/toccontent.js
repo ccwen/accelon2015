@@ -5,7 +5,7 @@ var E=React.createElement;
 var PT=React.PropTypes;
 var TreeToc=require("ksana2015-treetoc").component;
 var styles={
-	container:{overflowY:"auto",height:"99%",overflowX:"hidden"}
+	container:{overflowY:"auto",height:"99%",overflowX:"hidden",color:"white"}
 }
 var TocContent=React.createClass({
 	mixins:[PureRenderMixin]

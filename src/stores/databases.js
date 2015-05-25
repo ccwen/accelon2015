@@ -19,7 +19,7 @@ var DBListStore=Reflux.createStore({
 	,setResult:function(fullname,hits) {
 		this.searchable=this.searchable.map(function(db){
 			if (db.fullname===fullname) db.hits=hits;
-			return db;
+			return JSON.parse(JSON.stringify(db));
 		});
 		this.searchable.sort(function(a,b){
 			return b.hits-a.hits;

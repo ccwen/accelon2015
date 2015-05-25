@@ -41,7 +41,7 @@ var maincomponent = React.createClass({
   }
   ,renderLeft:function() {
     if (!this.state.hideLeftPanel) {
-      return E("div",{style:styles.leftpanel},E(LeftPanel,{}));
+      return E("div",{style:styles.leftpanel},E(LeftPanel,{action:this.action}));
     } 
   }
   ,render: function() {
