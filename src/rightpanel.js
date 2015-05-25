@@ -1,7 +1,9 @@
 var React=require("react");
+var Reflux=require("reflux");
 var TextPanel=require("./textpanel");
 var AuxPanel=require("./auxpanel");
 var E=React.createElement;
+var PT=React.PropTypes;
 
 var styles={
   container:{
@@ -18,10 +20,20 @@ var styles={
     flex:1
   }
 };
+var store_kwic=require("./stores/kwic");
+
 var RightPanel=React.createClass({
-	renderAuxPanel:function() {
+	mixins:[Reflux.listenTo(store_kwic,"onKWICData")]
+  ,getInitialState:function() {
+    return {kwic:[]};
+  }
+
+  ,onKWICData:function(data) {
+    this.setState({kwic:data});
+  }
+	,renderAuxPanel:function() {
 		if (this.props.bottomPanelShown) {
-			return E("div",{style:styles.auxpanel}, E(AuxPanel,{}));
+			return E("div",{style:styles.auxpanel}, E(AuxPanel,{kwic:this.state.kwic}));
 		}
 	}
   ,render: function() {
