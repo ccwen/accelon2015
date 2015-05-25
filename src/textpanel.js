@@ -20,7 +20,7 @@ var action=require("./actions/texts");
 var TextPanel=React.createClass({
 	mixins:[Reflux.listenTo(store,"onData")]
 	,getInitialState:function() {
-		return {tabs:defaultTabs}
+		return {traits:defaultTabs}
 	}
   ,propTypes:{
     action:PT.func.isRequired
@@ -54,28 +54,28 @@ var TextPanel=React.createClass({
   }  
   ,closeTab:function(e){
     var selectedIndex = this.refs.panel.getSelectedIndex();
-    var tabkey=this.state.tabs[selectedIndex].key;
+    var tabkey=this.state.traits[selectedIndex].key;
     action.remove(tabkey);
   }
   ,onData:function(data,newly){
   	if (!data.length) {
-  		this.setState({tabs:defaultTabs})
+  		this.setState({traits:defaultTabs})
   	} else {
-  		this.setState({tabs:data});
+  		this.setState({traits:data});
   	}
   }
-  ,renderTab:function(tab,idx) {
-  	if (React.isValidElement(tab)) {
-  		return tab;
+  ,renderTab:function(trait,idx) {
+  	if (React.isValidElement(trait)) {
+  		return trait;
   	} else {
-  		var component=tab.Component||TextTab;
-			return E(component,{key:idx,title:tab.title,text:tab.text});
+  		var component=trait.Component||TextTab;
+			return E(component,{key:idx,title:trait.title,trait:trait});
   	}
   },
 	render:function() {
  		return <Panel ref="panel" theme="flexbox" buttons={[this.panelbuttons()]}
       leftButtons={this.leftbuttons()} >
-	 		{this.state.tabs.map(this.renderTab)}
+	 		{this.state.traits.map(this.renderTab)}
     </Panel>
 	}
 });

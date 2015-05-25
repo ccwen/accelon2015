@@ -20,7 +20,7 @@ var AuxPanel=React.createClass({
   }
   ,closeTab:function(e){
     var selectedIndex = this.refs.panel.getSelectedIndex();
-    var tabkey=this.state.kwic[selectedIndex].key;
+    var tabkey=this.props.kwic[selectedIndex].key;
     action.remove(tabkey);
   }
   ,action:function(type,p1,p2) {

@@ -24,7 +24,7 @@ var TextTab = React.createClass({
 
   }
   ,renderContent:function() {
-  	return <TextContent text={this.props.text}/>
+  	return E(TextContent ,this.props);
   }
   ,render:function() {
  		return <Tab ref="tab" icon={this.props.icon} title={this.props.title} 
@@ -36,9 +36,6 @@ var TextTab = React.createClass({
         <Content>
           {this.renderContent()}
         </Content>
-        <Footer>
-          <TextFooter action={this.action}/>
-        </Footer>
     </Tab>
   }
 });

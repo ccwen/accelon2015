@@ -18,7 +18,7 @@ var KWICStore=Reflux.createStore({
 	,add_replace:function(trait) {
 		var i=this.find("dbname",trait.dbname);
 		if (i>-1) this.kwic.splice(i,1);
-		this.kwic.push(trait);
+		this.kwic.unshift(trait);
 	}
 	,onOpen:function(db,tofind,opts) {
 		kse.search(db,tofind,opts,function(err,data){
