@@ -11,13 +11,15 @@ var styles={
    ,background:"#333333"
    ,display:"flex"
    ,flexDirection: "column"
-   ,overflow:"hidden"  
+   ,overflow:"hidden" 
   },
   textpanel:{
     flex:3
   },
   auxpanel:{
     flex:1
+    ,display:"box"
+    ,position:"relative"
   }
 };
 var store_kwic=require("./stores/kwic");

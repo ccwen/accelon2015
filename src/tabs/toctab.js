@@ -1,5 +1,6 @@
 var React=require("react/addons");
 var E=React.createElement;
+var PT=React.PropTypes;
 var PureRenderMixin=React.addons.PureRenderMixin;
 var Reflux=require("reflux");
 var ReactPanels=require("react-panels");
@@ -18,12 +19,16 @@ var TocTab=React.createClass({
 	,getInitialState:function() {
 		return {toc:[]};
 	}
-	,onData:function(data) {
-		this.setState({toc:data});
+	,propTypes:{
+		db:PT.string.isRequired
+		,q:PT.string
+	}
+	,onData:function(data,db,tocname,q) {
+		this.setState({toc:data,db:db,tocname:tocname,q:q});
 	}	
 	,render:function() {
 		return <Tab title="One">
-        <Content><TocContent toc={this.state.toc} /></Content>
+        <Content><TocContent db={this.state.db} q= {this.state.q} toc={this.state.toc} /></Content>
       </Tab>
 	}
 });

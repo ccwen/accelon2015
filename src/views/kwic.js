@@ -7,7 +7,7 @@ var HoverLink=require("./hoverlink");
 var action=require("../actions/texts");
 
 var styles={
-	container:{overflowY:"auto",height:"20%",overflowX:"hidden",color:"white"}
+	container:{height:"20%",color:"white",overflowY:"auto",overflowX:"hidden"}
 }
 var KWIC=React.createClass({
 	mixins:[PureRenderMixin]

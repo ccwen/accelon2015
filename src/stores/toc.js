@@ -9,14 +9,14 @@ var TOCStore=Reflux.createStore({
 	listenables:actions
 	,find:function(key) {
 	}
-	,onOpen:function(dbname,tocname) {
+	,onOpen:function(dbname,tocname,q) {
 		var that=this;
 		kde.open(dbname,function(err,db){
 			if (err) {
 				console.error(err);
 			} else {
 				db.getTOC({tocname:tocname},function(data){
-					that.trigger(data,dbname,tocname);
+					that.trigger(data,dbname,tocname,q);
 				})
 			}
 		})

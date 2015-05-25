@@ -1,5 +1,7 @@
 var Reflux=require("reflux");
 var actions=require("../actions/texts");
+var MAXTAB=10;
+
 var Texts=Reflux.createStore({
 	listenables:actions
 	,texts:[]
@@ -11,7 +13,8 @@ var Texts=Reflux.createStore({
 	}
 	,add_replace:function(trait) {
 		var i=this.find(trait.key);
-		if (i>-1) this.texts.splice(i,1)
+		if (i>-1) this.texts.splice(i,1);
+		if (this.texts.length>=MAXTAB) this.texts.pop();
 	 	this.texts.unshift(trait);
 	}
 	,onAdd:function(trait) {

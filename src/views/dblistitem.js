@@ -24,7 +24,7 @@ var DBListItem=React.createClass({
 	}
 	,showTOC:function(e) {
 		this.props.action("opentoc");
-		action_toc.open(this.props.db.fullname,"mulu");
+		action_toc.open(this.props.db.fullname,"mulu",this.props.tofind);
 	}
 	,render:function() {
 		var db=this.props.db;
