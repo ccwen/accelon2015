@@ -26,26 +26,31 @@ var styles={
 
 var maincomponent = React.createClass({
   getInitialState:function() {
-    return {hideLeftPanel:false};
+    return {hideLeftPanel:false,hideBottomPanel:false};
   }
-  ,onHideLeftPanel:function() {
-    this.setState({hideLeftPanel:true});
-  }
-  ,onShowLeftPanel:function() {
-    this.setState({hideLeftPanel:false}); 
+  ,action:function(act,p1,p2) {
+    if(act==="hideLeftPanel") {
+      this.setState({hideLeftPanel:true});
+    } else if (act==="showLeftPanel") {
+      this.setState({hideLeftPanel:false});
+    } else if (act==="hideBottomPanel") {
+      this.setState({hideBottomPanel:true});
+    } else if (act==="showBottomPanel") {
+      this.setState({hideBottomPanel:false});
+    }
   }
   ,renderLeft:function() {
-    if (this.state.hideLeftPanel) {
-      return E("button",{style:styles.showPanelButton,onClick:this.onShowLeftPanel},
-           E("i",{className:"fa fa-chevron-right"}));
-    } else {
-      return E("div",{style:styles.leftpanel},E(LeftPanel,{onHide:this.onHideLeftPanel}));
+    if (!this.state.hideLeftPanel) {
+      return E("div",{style:styles.leftpanel},E(LeftPanel,{}));
     } 
   }
   ,render: function() {
     return E("div",{style:styles.container},
       this.renderLeft(),
-      E("div",{style:styles.rightpanel},E(RightPanel,{}))
+      E("div",{style:styles.rightpanel}, E(RightPanel,{action:this.action,
+        bottomPanelShown:!this.state.hideBottomPanel,
+        leftPanelShown:!this.state.hideLeftPanel})
+      )
     );
   }
 });

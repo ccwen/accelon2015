@@ -3,30 +3,30 @@ var ReactPanels=require("react-panels");
 var PureRenderMixin=React.addons.PureRenderMixin;
 var E=React.createElement;
 
-
 var Panel = ReactPanels.Panel;
 var Tab = ReactPanels.Tab;
 var Button = ReactPanels.Button;
 var Content = ReactPanels.Content;
 
-var TocTab=require("./tabs/toctab");
-var DBSearchTab=require("./tabs/dbsearchtab");
-
-var LeftPanel=React.createClass({
+var AuxPanel=React.createClass({
 	mixins:[PureRenderMixin]
 	,hidePanel:function() {
 		this.props.onHide();
 	}
+  ,panelbuttons:function(){
+    return <Button title="Remove active tab" onButtonClick={this.closeTab}>
+            <i className="fa fa-times"></i>
+          </Button>
+  }
+
   ,action:function(type,p1,p2) {
   	if (type=="opentoc"){
   		this.refs.panel.setSelectedIndex(1);
   	}
   }
 	,render:function() {
- 		return <Panel ref="panel" theme="flexbox2">
- 			<DBSearchTab action={this.action}  title="DB"/>
-      <TocTab action={this.action}  title="Toc"/>
+ 		return <Panel ref="panel" theme="flexbox2" buttons={[this.panelbuttons()]}>
     </Panel>
 	}
 });
-module.exports=LeftPanel;
+module.exports=AuxPanel;

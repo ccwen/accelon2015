@@ -1,55 +1,36 @@
-var React=require("react/addons");
-var ReactPanels=require("react-panels");
-var PureRenderMixin=React.addons.PureRenderMixin;
+var React=require("react");
+var TextPanel=require("./textpanel");
+var AuxPanel=require("./auxpanel");
 var E=React.createElement;
-var Reflux=require("reflux");
 
-var Panel = ReactPanels.Panel;
-var Tab = ReactPanels.Tab;
-var Content = ReactPanels.Content;
-var Button = ReactPanels.Button;
-
-var store=require("./stores/texts");
-var Welcome=require("./views/welcome");
-var defaultTabs=[<Welcome key="welcome"/>];
-var TextTab=require("./tabs/texttab");
-
-var action=require("./actions/texts");
-
-var RightPanel=React.createClass({
-	mixins:[Reflux.listenTo(store,"onData")]
-	,getInitialState:function() {
-		return {tabs:defaultTabs}
-	}
-	,panelbuttons:function(){
-		return <Button title="Remove active tab" onButtonClick={this.closeTab}>
-            <i className="fa fa-times"></i>
-          </Button>
-  }
-  ,closeTab:function(e){
-    var selectedIndex = this.refs.panel.getSelectedIndex();
-    var tabkey=this.state.tabs[selectedIndex].key;
-    action.remove(tabkey);
-  }
-  ,onData:function(data,newly){
-  	if (!data.length) {
-  		this.setState({tabs:defaultTabs})
-  	} else {
-  		this.setState({tabs:data});
-  	}
-  }
-  ,renderTab:function(tab,idx) {
-  	if (React.isValidElement(tab)) {
-  		return tab;
-  	} else {
-  		var component=tab.Component||TextTab;
-			return E(component,{key:idx,title:tab.title,text:tab.text});
-  	}
+var styles={
+  container:{
+   width:"100%",height:"100%"
+   ,background:"#333333"
+   ,display:"flex"
+   ,flexDirection: "column"
+   ,overflow:"hidden"  
   },
-	render:function() {
- 		return <Panel ref="panel" theme="flexbox2" buttons={[this.panelbuttons()]} >
-	 		{this.state.tabs.map(this.renderTab)}
-    </Panel>
+  textpanel:{
+    flex:3
+  },
+  auxpanel:{
+    flex:1
+  }
+};
+var RightPanel=React.createClass({
+	renderAuxPanel:function() {
+		if (this.props.bottomPanelShown) {
+			return E("div",{style:styles.auxpanel}, E(AuxPanel,{}));
+		}
 	}
+  ,render: function() {
+    return E("div",{style:styles.container},
+       E("div",{style:styles.textpanel}, 
+       		E(TextPanel,{action:this.props.action,
+       			bottomPanelShown:this.props.bottomPanelShown,leftPanelShown:this.props.leftPanelShown}))
+       ,this.renderAuxPanel()
+    );
+  }
 });
 module.exports=RightPanel;
