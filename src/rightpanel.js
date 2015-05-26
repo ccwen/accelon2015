@@ -18,7 +18,6 @@ var styles={
   },
   auxpanel:{
     flex:1
-    ,display:"box"
     ,position:"relative"
   }
 };
@@ -31,11 +30,11 @@ var RightPanel=React.createClass({
   }
 
   ,onKWICData:function(data) {
-    this.setState({kwic:data});
+    this.setState({kwic:data,timestamp:new Date().toString()});
   }
 	,renderAuxPanel:function() {
 		if (this.props.bottomPanelShown) {
-			return E("div",{style:styles.auxpanel}, E(AuxPanel,{kwic:this.state.kwic}));
+			return E("div",{style:styles.auxpanel}, E(AuxPanel,{kwic:this.state.kwic,timestamp:this.state.timestamp}));
 		}
 	}
   ,render: function() {

@@ -13,6 +13,7 @@ var KWIC=React.createClass({
 	mixins:[PureRenderMixin]
 	,propTypes:{
 		trait:PT.object.isRequired
+		,timestamp:PT.string.isRequired
 	}
 	,opentext:function(e) {
 		var n=e.target.parentElement.dataset.n;

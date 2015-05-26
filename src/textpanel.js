@@ -44,12 +44,12 @@ var TextPanel=React.createClass({
   }
   ,leftbuttons:function(){
     var prop1=this.props.leftPanelShown?{onButtonClick:this.hideLeftPanel}:{onButtonClick:this.showLeftPanel};
-    var prop2=this.props.bottomPanelShown?{onButtonClick:this.hideBottomPanel}:{onButtonClick:this.showBottomPanel};
+   // var prop2=this.props.bottomPanelShown?{onButtonClick:this.hideBottomPanel}:{onButtonClick:this.showBottomPanel};
     var cls1=this.props.leftPanelShown?"fa fa-chevron-left":"fa fa-chevron-right";
-    var cls2=this.props.bottomPanelShown?"fa fa-chevron-up":"fa fa-chevron-down";
+   // var cls2=this.props.bottomPanelShown?"fa fa-chevron-up":"fa fa-chevron-down";
 
-    return [ E(Button,prop2,E("i",{className:cls2}))
-            ,E(Button,prop1,E("i",{className:cls1}))
+    return [// E(Button,prop2,E("i",{className:cls2})),
+            E(Button,prop1,E("i",{className:cls1}))
     ];
   }  
   ,closeTab:function(e){

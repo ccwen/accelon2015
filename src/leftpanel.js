@@ -27,7 +27,7 @@ var LeftPanel=React.createClass({
 	,render:function() {
  		return <Panel ref="panel" theme="flexbox">
  			<DBSearchTab action={this.action}  title="DB"/>
-      <TocTab action={this.action}  title="Toc"/>
+      <TocTab action={this.action} title="Toc"/>
     </Panel>
 	}
 });

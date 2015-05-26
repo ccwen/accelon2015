@@ -1,7 +1,7 @@
 var React=require("react/addons");
 var ReactPanels=require("react-panels");
 var E=React.createElement;
-
+var PT=React.PropTypes;
 
 var Panel = ReactPanels.Panel;
 var Tab = ReactPanels.Tab;
@@ -18,6 +18,10 @@ var AuxPanel=React.createClass({
             <i className="fa fa-times"></i>
           </Button>
   }
+  ,propTypes:{
+    timestamp: PT.string.isRequired
+    ,kwic: PT.string.isRequired
+  }
   ,closeTab:function(e){
     var selectedIndex = this.refs.panel.getSelectedIndex();
     var tabkey=this.props.kwic[selectedIndex].key;
@@ -32,7 +36,8 @@ var AuxPanel=React.createClass({
     } else {
       var component=trait.Component||KWICTab;
       var title=trait.query+" in "+trait.dbname;
-      return E(component,{key:idx,title:title,trait:trait});
+      //use timestamp to force repaint
+      return E(component,{key:idx,title:title,trait:trait,timestamp:this.props.timestamp});
     }
   }
 	,render:function() {

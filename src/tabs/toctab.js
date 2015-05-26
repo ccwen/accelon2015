@@ -20,15 +20,15 @@ var TocTab=React.createClass({
 		return {toc:[]};
 	}
 	,propTypes:{
-		db:PT.string.isRequired
-		,q:PT.string
+		q:PT.string
 	}
-	,onData:function(data,db,tocname,q) {
-		this.setState({toc:data,db:db,tocname:tocname,q:q});
+	,onData:function(data,dbid,tocname,q,hits) {
+		this.setState({toc:data,dbid:dbid,tocname:tocname,q:q,hits:hits});
 	}	
 	,render:function() {
 		return <Tab title="One">
-        <Content><TocContent db={this.state.db} q= {this.state.q} toc={this.state.toc} /></Content>
+        <Content><TocContent dbid={this.state.dbid} 
+        	q={this.state.q} toc={this.state.toc} hits={this.state.hits} /></Content>
       </Tab>
 	}
 });

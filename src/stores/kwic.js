@@ -1,5 +1,5 @@
 /** 
-Store of Keywords in context
+	Store of Key Words In Context (KWIC)
 */
 
 var Reflux=require("reflux");
@@ -20,8 +20,8 @@ var KWICStore=Reflux.createStore({
 		if (i>-1) this.kwic.splice(i,1);
 		this.kwic.unshift(trait);
 	}
-	,onOpen:function(db,tofind,opts) {
-		kse.search(db,tofind,opts,function(err,data){
+	,onOpen:function(dbid,tofind,opts) {
+		kse.search(dbid,tofind,opts,function(err,data){
 			if (!err) {
 				if (!data.key) data.key='S'+Math.round(Math.random()*10);
 				this.add_replace(data);
