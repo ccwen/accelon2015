@@ -28,7 +28,7 @@ var DBListTab=React.createClass({
 	}
 	,componentDidMount:function() {
 		setTimeout(function(){
-			action.list("cbeta2015");
+			action.list(ksana.js.kdbfolder);
 		}.bind(this),500);
 	}
 	,onData:function(data) {
