@@ -12,8 +12,9 @@ var DBListStore=Reflux.createStore({
 		}.bind(this));
 	}
 	,onList:function(appname) {
-		appname=appname||"accelon2015";
-		this.searchable=this.databases.filter(function(item){return item.folder===appname})
+		appname=appname||"";
+		if (appname) this.searchable=this.databases.filter(function(item){return item.folder===appname});
+		else this.searchable=this.databases;
 		this.trigger(this.searchable);
 	}
 	,setResult:function(fullname,hits) {
