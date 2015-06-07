@@ -37,24 +37,22 @@ var TextTab = React.createClass({
   ,renderContent:function() {
   	return E(TextContent ,{text:this.state.segment.text});
   }
-  ,changeTab:function(seq) {
+  ,changeTab:function(segid) {
     var dbid=this.props.trait.dbid;    
     if (segid) {
-      var tab={dbid:dbid,segid:segid,title:dbid+":"+segid};
-      action.closeAdd(this.props.trait.key,tab,this.props.trait.key);
+      var title=dbid+":"+segid;
+      var fseg=this.props.trait.engine.findSeg(segid,1)[0];
+      var newtrait={key:title,title:title,dbid:dbid,
+        file:fseg.file,seg:fseg.seg,q:this.props.q,engine:this.props.trait.engine};
+
+      action.closeAdd(this.props.trait.key,newtrait);
     }
   }
   ,prevSeg:function() {
-    var n=parseInt(this.state.seq);
-    if (!n) return;
-    n--;
-    this.changeTab(n);
+    this.changeTab(this.props.trait.engine.prevSeg(this.state.segment.segname));
   }
   ,nextSeg:function() {
-    if (!this.state.text) return;
-    var n=parseInt(this.state.seq);
-    n++;
-    this.changeTab(n);
+    this.changeTab(this.props.trait.engine.nextSeg(this.state.segment.segname));
   }
   ,action:function(act,p1,p2) {
     if (act==="next") this.nextSeg();

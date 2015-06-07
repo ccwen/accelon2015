@@ -23,8 +23,8 @@ var DBListItem=React.createClass({
 		action_kwic.open(this.props.db.fullname,this.props.tofind,{range:{start:0}});
 	}
 	,showTOC:function(e) {
-		this.props.action("opentoc");
-		action_toc.open(this.props.db.fullname,"mulu",this.props.tofind);
+		this.props.action("opentoc");	
+		action_toc.open(this.props.db.fullname,this.props.tofind);
 	}
 	,render:function() {
 		var db=this.props.db;

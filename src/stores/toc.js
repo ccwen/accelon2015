@@ -9,9 +9,10 @@ var TOCStore=Reflux.createStore({
 	listenables:actions
 	,find:function(key) {
 	}
-	,onOpen:function(dbname,tocname,q) {
+	,onOpen:function(dbname,q) {
 		var that=this;
 		kse.search(dbname,q,{},function(err,res){
+			var tocname=res.engine.get("meta").toc;
 			if (err) {
 				console.error(err);
 			} else {

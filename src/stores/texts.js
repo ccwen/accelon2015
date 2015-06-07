@@ -17,6 +17,12 @@ var Texts=Reflux.createStore({
 		if (this.texts.length>=MAXTAB) this.texts.pop();
 	 	this.texts.unshift(trait);
 	}
+	,onCloseAdd:function(oldkey,trait) {
+		var i=this.find(oldkey);
+		if (i==-1)	return ;
+		this.texts[i]=trait;
+		this.trigger(this.texts,trait.key);
+	}
 	,onAdd:function(trait) {
 		this.add_replace(trait);
 		this.trigger(this.texts,trait.key);
