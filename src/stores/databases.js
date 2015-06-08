@@ -13,7 +13,8 @@ var DBListStore=Reflux.createStore({
 	}
 	,onList:function(appname) {
 		appname=appname||"";
-		if (appname) this.searchable=this.databases.filter(function(item){return item.folder===appname});
+		if (appname) this.searchable=this.databases.filter(function(item){
+			return item.folder===appname|| item.folder==="accelon2015_kdb"});
 		else this.searchable=this.databases;
 		this.trigger(this.searchable);
 	}
