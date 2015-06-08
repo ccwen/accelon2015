@@ -7,8 +7,8 @@ var DBListStore=Reflux.createStore({
 	databases:[]
 	,listenables:actions
 	,init:function() {
-		var r=kde.rpc.list({},function(databases){
-			this.databases=databases;
+		kde.listkdb(function(databases){
+				this.databases=databases;
 		}.bind(this));
 	}
 	,onList:function(appname) {
