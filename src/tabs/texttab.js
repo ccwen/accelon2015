@@ -15,7 +15,7 @@ var TextContent=require("../views/textcontent");
 var TextToolbar=require("./texttoolbar");
 var TextFooter=require("./textfooter");
 var action=require("../actions/texts");
-
+var renderTags=["h1","h2","h3","h4","h5","h6","h7","h8","h9"];
 var TextTab = React.createClass({
   displayName: 'TextTab'
   ,getInitialState:function() {
@@ -23,7 +23,7 @@ var TextTab = React.createClass({
   }
   ,mixins: [TabWrapperMixin,PureRenderMixin]
   ,fetchText:function(trait) {
-    kse.highlightSeg(trait.engine,trait.file,trait.seg,{q:trait.q,nospan:true},
+    kse.highlightSeg(trait.engine,trait.file,trait.seg,{q:trait.q,renderTags:renderTags,nospan:true},
       function(segment){
         this.setState({segment:segment})
     }.bind(this));
