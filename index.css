@@ -2,8 +2,9 @@
 body {margin:0px;}
 #main {}
 .hl {color:red;}
-.h1 {font-size:200%;color:blue}
-.h2 {font-size:175%;color:green;}
+.h2-last:after {content :"\a"}
+.h1 {font-size:200%;}
+.h2 {font-size:175%;color:green;color:blue;white-space: pre}
 .h3 {font-size:150%;color:yellow}
 .h4 {font-size:125%;color:orange}
 .h5 {font-size:110%;color:purple}
