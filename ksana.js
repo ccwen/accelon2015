@@ -1,11 +1,11 @@
 jsonp_handler({
  "version": "1",
- "build": 744,
+ "build": 843,
  "title": "accelon2015",
  "minruntime": 1,
  "baseurl": "http://rawgit.com/ksanaforge/accelon2015/master/",
  "description": "",
- "kdbfolder": "",
+ "kdbfolder": "accelon2015",
  "databases": {
   "jiangkangyur": {
    "description": "Jiang Kangyur"
@@ -22,7 +22,8 @@ jsonp_handler({
    "ksana-jsonrom",
    "ksana-analyzer",
    "ksana-database",
-   "ksana-search"
+   "ksana-search",
+   "ksana-simple-api"
   ]
  },
  "files": [
@@ -35,19 +36,19 @@ jsonp_handler({
  ],
  "filesizes": [
   575,
-  69,
-  109133,
+  383,
+  121907,
   684265,
-  181966,
-  940
+  182674,
+  966
  ],
  "filedates": [
   "2015-05-23T10:25:43.023Z",
-  "2015-05-24T15:43:37.315Z",
-  "2015-05-25T13:17:54.909Z",
-  "2015-05-23T10:27:47.722Z",
-  "2015-06-07T13:17:14.746Z",
-  "2015-06-07T13:15:35.186Z"
+  "2015-06-29T04:03:44.191Z",
+  "2015-07-11T09:44:29.375Z",
+  "2015-06-08T06:23:28.543Z",
+  "2015-07-11T09:44:41.228Z",
+  "2015-07-11T09:43:51.254Z"
  ],
- "date": "2015-06-07T13:17:15.724Z"
+ "date": "2015-07-11T09:44:42.203Z"
 })

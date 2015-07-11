@@ -24,12 +24,13 @@ var TocContent=React.createClass({
 	,opentext:function(tocid,tocitem){
 		kde.open(this.props.dbid,function(err,db){
 			var fseg=db.fileSegFromVpos(tocitem.vpos);
+			fseg.seg--;
 			var absseg=db.fileSegToAbsSeg(fseg.file,fseg.seg);
 			var seg=fseg.seg, segnames=db.get("segnames");
 			var title=db.dbname+":"+segnames[absseg];
 			var key=title;
 			if (segnames[absseg]==="_") {
-				var title=db.dbname+":"+segnames[absseg+1];
+				var title=db.dbname+":"+segnames[absseg];
 				seg++;
 			}
 			action.add({key:key,title:title,engine:db,dbid:db.dbname,
