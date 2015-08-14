@@ -4,7 +4,7 @@
 
 var Reflux=require("reflux");
 var actions=require("../actions/kwic");
-var kse=require("ksana-search");
+var ksa=require("ksana-simple-api");
 
 var KWICStore=Reflux.createStore({
 	listenables:actions
@@ -15,17 +15,24 @@ var KWICStore=Reflux.createStore({
 		}
 		return -1;
 	}
+	,triggerImmutable:function() {
+			var kwic=[];
+			for (var i=0;i<this.kwic.length;i++) {
+				kwic.push(this.kwic[i]);
+			}
+			this.trigger(kwic);
+	}
 	,add_replace:function(trait) {
 		var i=this.find("dbname",trait.dbname);
 		if (i>-1) this.kwic.splice(i,1);
 		this.kwic.unshift(trait);
 	}
 	,onOpen:function(dbid,tofind,opts) {
-		kse.search(dbid,tofind,opts,function(err,data){
+		ksa.excerpt({db:dbid,q:tofind},function(err,data){
 			if (!err) {
 				if (!data.key) data.key='S'+Math.round(Math.random()*10);
-				this.add_replace(data);
-				this.trigger(this.kwic);
+				this.add_replace({db:dbid,q:tofind,excerpts:data});
+				this.triggerImmutable();
 			};
 		}.bind(this));
 	}
@@ -33,7 +40,7 @@ var KWICStore=Reflux.createStore({
 		var i=this.find("key",key);
 		if (i===-1)return;
 		this.kwic.splice(i,1);
-		this.trigger(this.kwic);
+		this.triggerImmutable();
 	}
 	,onSearch:function() {
 	}

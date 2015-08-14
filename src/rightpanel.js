@@ -28,13 +28,12 @@ var RightPanel=React.createClass({
   ,getInitialState:function() {
     return {kwic:[]};
   }
-
   ,onKWICData:function(data) {
-    this.setState({kwic:data,timestamp:new Date().toString()});
+    this.setState({kwic:data});
   }
 	,renderAuxPanel:function() {
 		if (this.props.bottomPanelShown) {
-			return E("div",{style:styles.auxpanel}, E(AuxPanel,{kwic:this.state.kwic,timestamp:this.state.timestamp}));
+			return E("div",{style:styles.auxpanel}, E(AuxPanel,{kwic:this.state.kwic}));
 		}
 	}
   ,render: function() {

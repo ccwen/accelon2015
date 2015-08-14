@@ -11,7 +11,7 @@ var styles={
 var TextContent=React.createClass({
 	mixins:[PureRenderMixin]
 	,getInitialState:function(){
-		return {tofind:'君子'}
+		return {tofind:'大千'}
 	}
 	,propTypes:{
 		onTofindChange:PT.func

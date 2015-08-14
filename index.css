@@ -1,7 +1,8 @@
 /* application css */
 body {margin:0px;}
 #main {}
-.hl {color:red;}
+.hl0 {color:red;}
+.hl1 {color:blue;}
 .h2-last:after {content :"\a"}
 .h1 {font-size:200%;}
 .h2 {font-size:175%;color:green;color:blue;white-space: pre}

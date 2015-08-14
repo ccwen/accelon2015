@@ -4,23 +4,15 @@ Store of Keywords in context
 
 var Reflux=require("reflux");
 var actions=require("../actions/toc");
-var kse=require("ksana-search");
+var ksa=require("ksana-simple-api");
 var TOCStore=Reflux.createStore({
 	listenables:actions
 	,find:function(key) {
 	}
 	,onOpen:function(dbname,q) {
-		var that=this;
-		kse.search(dbname,q,{},function(err,res){
-			var tocname=res.engine.get("meta").toc;
-			if (err) {
-				console.error(err);
-			} else {
-				res.engine.getTOC({tocname:tocname},function(data){
-					that.trigger(data,dbname,tocname,q,res.rawresult);
-				})
-			}
-		})
+		ksa.toc({db:dbname,q:q},function(err,res){
+			this.trigger(res.toc,dbname,res.tocname,q,res.hits);
+		}.bind(this));
 	}
 	,onSearch:function(key) {
 	}

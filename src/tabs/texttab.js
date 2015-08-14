@@ -1,8 +1,7 @@
 var React=require("react/addons");
 var E=React.createElement;
 var PureRenderMixin=React.addons.PureRenderMixin;
-var kde=require("ksana-database");
-var kse=require("ksana-search");
+var ksa=require("ksana-simple-api");
 var ReactPanels=require("react-panels");
 var Tab = ReactPanels.Tab;
 var TabWrapperMixin = ReactPanels.Mixins.TabWrapper;
@@ -23,9 +22,8 @@ var TextTab = React.createClass({
   }
   ,mixins: [TabWrapperMixin,PureRenderMixin]
   ,fetchText:function(trait) {
-    kse.highlightSeg(trait.engine,trait.file,trait.seg,{q:trait.q,renderTags:renderTags,nospan:true},
-      function(segment){
-        this.setState({segment:segment})
+    ksa.fetch({db:trait.db,uti:trait.uti,q:trait.q,renderTags:renderTags},function(err,segments){
+        this.setState({segment:segments[0]})
     }.bind(this));
   } 
   ,componentWillReceiveProps:function(nextProps){
@@ -35,24 +33,26 @@ var TextTab = React.createClass({
     this.fetchText(this.props.trait);
   }  
   ,renderContent:function() {
-  	return E(TextContent ,{text:this.state.segment.text});
+  	return E(TextContent ,{text:this.state.segment.text,hits:this.state.segment.hits});
   }
-  ,changeTab:function(segid) {
-    var dbid=this.props.trait.dbid;    
-    if (segid) {
-      var title=dbid+":"+segid;
-      var fseg=this.props.trait.engine.findSeg(segid,1)[0];
-      var newtrait={key:title,title:title,dbid:dbid,
-        file:fseg.file,seg:fseg.seg,q:this.props.q,engine:this.props.trait.engine};
-
+  ,changeTab:function(uti) {
+    var db=this.props.trait.db;
+    if (db.indexOf("/")>-1) db=db.substr(db.indexOf("/")+1);
+    if (uti) {
+      var title=db+":"+uti;
+      var newtrait={key:title,title:title,db:db,uti:uti,q:this.props.trait.q};
       action.closeAdd(this.props.trait.key,newtrait);
     }
   }
   ,prevSeg:function() {
-    this.changeTab(this.props.trait.engine.prevSeg(this.state.segment.segname));
+    ksa.prevUti({db:this.props.trait.db,uti:this.state.segment.uti},function(err,prev){
+        this.changeTab(prev);  
+    }.bind(this));
   }
   ,nextSeg:function() {
-    this.changeTab(this.props.trait.engine.nextSeg(this.state.segment.segname));
+    ksa.nextUti({db:this.props.trait.db,uti:this.state.segment.uti},function(err,next){
+        this.changeTab(next);  
+    }.bind(this));
   }
   ,action:function(act,p1,p2) {
     if (act==="next") this.nextSeg();

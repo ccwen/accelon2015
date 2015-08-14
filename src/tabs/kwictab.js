@@ -23,7 +23,7 @@ var KWICTab = React.createClass({
 
   }
   ,renderContent:function() {
-  	return <KWIC trait={this.props.trait} timestamp={this.props.timestamp}/>
+  	return <KWIC excerpts={this.props.excerpts} db={this.props.db} q={this.props.q}/>
   }
   ,render:function() {
  		return <Tab ref="tab" icon={this.props.icon} title={this.props.title} 

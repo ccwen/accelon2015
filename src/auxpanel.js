@@ -19,8 +19,7 @@ var AuxPanel=React.createClass({
           </Button>
   }
   ,propTypes:{
-    timestamp: PT.string.isRequired
-    ,kwic: PT.string.isRequired
+    kwic: PT.array.isRequired
   }
   ,closeTab:function(e){
     var selectedIndex = this.refs.panel.getSelectedIndex();
@@ -30,14 +29,13 @@ var AuxPanel=React.createClass({
   ,action:function(type,p1,p2) {
 
   }
-  ,renderKWIC:function(trait,idx) {
-    if (React.isValidElement(trait)) {
-      return trait;
+  ,renderKWIC:function(item,idx) {
+    if (React.isValidElement(item)) {
+      return item;
     } else {
-      var component=trait.Component||KWICTab;
-      var title=trait.query+" in "+trait.dbname;
-      //use timestamp to force repaint
-      return E(component,{key:idx,title:title,trait:trait,timestamp:this.props.timestamp});
+      var component=item.Component||KWICTab;
+      var title=item.q+" in "+item.db;
+      return E(component,{key:idx,title:title, excerpts:item.excerpts,db:item.db,q:item.q});
     }
   }
 	,render:function() {
