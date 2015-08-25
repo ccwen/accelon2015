@@ -3,7 +3,7 @@ var PureRenderMixin=React.addons.PureRenderMixin;
 var Reflux=require("reflux");
 var E=React.createElement;
 var PT=React.PropTypes;
-var kde=require("ksana-database");
+var ksa=require("ksana-simple-api");
 var TreeToc=require("ksana2015-treetoc").Component;
 var action=require("../actions/texts");
 var action_kwic=require("../actions/kwic");
@@ -22,19 +22,12 @@ var TocContent=React.createClass({
 		action_kwic.open(this.props.dbid,this.props.q,{range:{start:tocitem.vpos,end:tocitem.end}});
 	}
 	,opentext:function(tocid,tocitem){
-		kde.open(this.props.dbid,function(err,db){
-			var fseg=db.fileSegFromVpos(tocitem.vpos);
-			fseg.seg--;
-			var absseg=db.fileSegToAbsSeg(fseg.file,fseg.seg);
-			var seg=fseg.seg, segnames=db.get("segnames");
-			var title=db.dbname+":"+segnames[absseg];
-			var key=title;
-			if (segnames[absseg]==="_") {
-				var title=db.dbname+":"+segnames[absseg];
-				seg++;
-			}
-			action.add({key:key,title:title,engine:db,dbid:db.dbname,
-				file:fseg.file,seg:seg,q:this.props.q});
+		ksa.vpos2txtid(this.props.dbid,tocitem.vpos,function(err,uti){
+			var slash=this.props.dbid.lastIndexOf("/");
+			var title=this.props.dbid;
+			if (slash>0) title=title.substr(slash+1);
+			title+=':'+uti;
+			action.add({key:title,title:title,db:this.props.dbid,uti:uti,q:this.props.q});
 		}.bind(this));
 	}
 	,render:function() {
