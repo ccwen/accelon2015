@@ -984,7 +984,7 @@ var Reflux=require("reflux");
 var E=React.createElement;
 var PT=React.PropTypes;
 var kde=require("ksana-database");
-var TreeToc=require("ksana2015-treetoc").component;
+var TreeToc=require("ksana2015-treetoc").Component;
 var action=require("../actions/texts");
 var action_kwic=require("../actions/kwic");
 var styles={
@@ -1165,6 +1165,9 @@ var TreeToc=React.createClass({
 			if (this.props.toc[i].hit) delete this.props.toc[i].hit;
 		}
 	}
+	,componentDidMount:function() {
+		buildToc(this.props.toc);
+	}
 	,componentWillReceiveProps:function(nextProps) {
 		if (nextProps.toc && !nextProps.toc.built) {
 			buildToc(nextProps.toc);
@@ -1241,7 +1244,7 @@ var TreeToc=React.createClass({
 				hits:this.props.hits}));
 	}
 })
-module.exports={component:TreeToc,genToc:genToc,buildToc:buildToc};
+module.exports={Component:TreeToc,genToc:genToc,buildToc:buildToc};
 
 },{"./manipulate":"C:\\ksana2015\\node_modules\\ksana2015-treetoc\\manipulate.js","./treenode":"C:\\ksana2015\\node_modules\\ksana2015-treetoc\\treenode.js","react":"react"}],"C:\\ksana2015\\node_modules\\ksana2015-treetoc\\manipulate.js":[function(require,module,exports){
 var descendantOf=function(n,toc) { /* returning all descendants */

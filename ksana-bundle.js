@@ -377,6 +377,22 @@ var openLocalNode=function(kdbid,opts,cb,context) {
 	if (cb) cb.apply(context,[kdbid+" not found"]);
 	return null;
 }
+var openLocalFile=function(file,opts,cb,context) {	
+    var kdbid=file.name.substr(0,file.name.length-4);
+
+		var engine=localPool[kdbid];
+		if (engine) {
+			cb(0,engine);
+			return;
+		}
+
+		new Kdb.open(file,function(err,handle){
+			createLocalEngine(handle,opts,function(engine){
+				localPool[kdbid]=engine;
+				cb.apply(context||engine.context,[0,engine]);
+			},context);
+		});
+}
 
 var openLocalHtml5=function(kdbid,opts,cb,context) {	
 	var engine=localPool[kdbid];
@@ -398,17 +414,20 @@ var openLocalHtml5=function(kdbid,opts,cb,context) {
 }
 
 var kde_remote=require("./kde_remote");
-
 //omit cb for syncronize open
 var open=function(kdbid,opts,cb,context)  {
-	if (kdbid.indexOf("http")==0) {
-		return kde_remote(kdbid,opts,cb,context);
-	}
-
 	if (typeof opts=="function") { //no opts
 		if (typeof cb=="object") context=cb;
 		cb=opts;
 		opts={};
+	}
+
+	if (typeof File!=="undefined" && kdbid.constructor===File) {
+		return openLocalFile(kdbid,opts,cb,context);
+	}
+
+	if (kdbid.indexOf("http")==0) {
+		return kde_remote(kdbid,opts,cb,context);
 	}
 	
 	var engine=localPool[kdbid];
@@ -786,7 +805,7 @@ var absSegToFileSeg=function(absoluteseg) {
 	var filesegcount=this.get("filesegcount");
 	var s=absoluteseg;
 	var file=0;
-	while (s>filesegcount[file]) {
+	while (s>=filesegcount[file]) {
 		file++;
 	}
 	if (file) {
@@ -867,7 +886,9 @@ var getFileSegOffsets=function(i) {
 var absSegFromVpos=function(vpos) { 
 	var segoffsets=this.get(["segoffsets"]);
 	var i=bsearch(segoffsets,vpos,true);
-	while (segoffsets[i]==vpos) i++;
+	if (segoffsets[i]>vpos && segoffsets[i-1]<vpos) {
+		return i-1;
+	}
 	return i;
 }
 
@@ -1046,7 +1067,7 @@ var txt2absseg=function(txtid) {
 var txtid2fileSeg=function(txtid) {
 	var absseg=txt2absseg.call(this,txtid);
 	if (!absseg) return;
-	return absSegToFileSeg.call(this,absseg-1);
+	return absSegToFileSeg.call(this,absseg);
 }
 
 var vpos2txtid=function(vpos){
@@ -1071,7 +1092,7 @@ var txtid2vpos=function(txtid) {
 	var absseg=txt2absseg.call(this,txtid);
 	if (!absseg) return;
 	var segoffsets=this.get("segoffsets");
-	return segoffsets[absseg-1];
+	return segoffsets[absseg];
 
 }
 var setup=function(engine) {
@@ -1113,14 +1134,9 @@ var buildSegnameIndex=function(engine){
 	/* replace txtid,txtid_idx, txtid_invert , save 400ms load time */
 	var segnames=engine.get("segnames");
 	var segindex={};
-	for (var i=1;i<=segnames.length;i++) {
-		var segname=segnames[i-1];
-		if (typeof segindex[segname]!=="undefined") {
-			if (typeof segindex[segname]==="number") segindex[segname]=[segindex[segname]];
-			segindex[segname].push(i);
-		} else {
-			segindex[segname]=i;
-		}
+	for (var i=0;i<segnames.length;i++) {
+		var segname=segnames[i];
+		segindex[segname]=i;
 	}
 	engine.txtid=segindex;
 }
@@ -1221,6 +1237,14 @@ module.exports=API;
 
 /* emulate filesystem on html5 browser */
 /* emulate filesystem on html5 browser */
+
+var getFileSize=function(fn,cb) {
+	var reader = new FileReader();
+	reader.onload = function(){
+		cb(reader.result.length);
+	};
+	reader.readAsDataURL(fn);
+}
 var read=function(handle,buffer,offset,length,position,cb) {//buffer and offset is not used
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', handle.url , true);
@@ -1242,6 +1266,13 @@ var fstatSync=function(handle) {
 var fstat=function(handle,cb) {
 	throw "not implement yet";
 }
+var _openLocal=function(file,cb) {
+	var handle={};
+	handle.url=URL.createObjectURL(file);
+	handle.fn=file.name.substr(file.name.indexOf("#")+1);
+	handle.file=file;
+	cb(handle);
+}
 var _open=function(fn_url,cb) {
 		var handle={};
 		if (fn_url.indexOf("filesystem:")==0){
@@ -1256,9 +1287,14 @@ var _open=function(fn_url,cb) {
 		cb(handle);
 }
 var open=function(fn_url,cb) {
-		if (!API.initialized) {init(1024*1024,function(){
-			_open.apply(this,[fn_url,cb]);
-		},this)} else _open.apply(this,[fn_url,cb]);
+	if (typeof File !=="undefined" && fn_url.constructor ===File) {
+		_openLocal.call(this,fn_url,cb);
+		return;
+	}
+
+	if (!API.initialized) {init(1024*1024,function(){
+		_open.apply(this,[fn_url,cb]);
+	},this)} else _open.apply(this,[fn_url,cb]);
 }
 var load=function(filename,mode,cb) {
 	open(filename,mode,cb,true);
@@ -1300,6 +1336,8 @@ var init=function(quota,cb,context) {
 		}, errorHandler 
 	);
 }
+
+
 var API={
 	read:read
 	,readdir:readdir
@@ -1307,6 +1345,7 @@ var API={
 	,close:close
 	,fstatSync:fstatSync
 	,fstat:fstat
+	,getFileSize:getFileSize
 }
 module.exports=API;
 },{}],12:[function(require,module,exports){
@@ -1879,6 +1918,7 @@ var Open=function(path,opts,cb) {
 	//if the string is always ucs2
 	//can use Uint16 to read it.
 	//http://updates.html5rocks.com/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
+
 	var decodeutf8 = function (utftext) {
 		var string = "";
 		var i = 0;
@@ -1907,6 +1947,14 @@ var Open=function(path,opts,cb) {
 		return string;
 	}
 
+	var decodeule16buffer=function(buf) {
+		if (typeof TextDecoder!=="undefined") {
+			var decoder=new TextDecoder("utf-16le");
+			return decoder.decode(buf)
+		} else {
+			return String.fromCharCode.apply(null, new Uint16Array(buffer));
+		}
+	}
 	var readString= function(pos,blocksize,encoding,cb) {
 		encoding=encoding||'utf8';
 		var buffer=new Buffer(blocksize);
@@ -1917,9 +1965,8 @@ var Open=function(path,opts,cb) {
 				if (encoding=='utf8') {
 					var str=decodeutf8(String.fromCharCode.apply(null, new Uint8Array(buffer)))
 				} else { //ucs2 is 3 times faster
-					var str=String.fromCharCode.apply(null, new Uint16Array(buffer))	
+					var str=decodeule16buffer(buffer);
 				}
-				
 				cb.apply(that,[str]);
 			} 
 			else cb.apply(that,[buffer.toString(encoding)]);	
@@ -1929,33 +1976,41 @@ var Open=function(path,opts,cb) {
 	//work around for chrome fromCharCode cannot accept huge zarray
 	//https://code.google.com/p/chromium/issues/detail?id=56588
 	var buf2stringarr=function(buf,enc) {
-		if (enc=="utf8") 	var arr=new Uint8Array(buf);
-		else var arr=new Uint16Array(buf);
-		var i=0,codes=[],out=[],s="";
-		while (i<arr.length) {
-			if (arr[i]) {
-				codes[codes.length]=arr[i];
-			} else {
-				s=String.fromCharCode.apply(null,codes);
-				if (enc=="utf8") out[out.length]=decodeutf8(s);
-				else out[out.length]=s;
-				codes=[];				
+		if (typeof TextDecoder!=="undefined") {
+			//TextDecoder is two times faster
+			if (enc==="ucs2") enc="utf-16le";
+			var decoder=new TextDecoder(enc);
+			return decoder.decode(buf).split("\0");
+		} else{
+			if (enc=="utf8") 	var arr=new Uint8Array(buf);
+			else var arr=new Uint16Array(buf);
+			var i=0,codes=[],out=[],s="";
+			while (i<arr.length) {
+				if (arr[i]) {
+					codes[codes.length]=arr[i];
+				} else {
+					s=String.fromCharCode.apply(null,codes);
+					if (enc=="utf8") out[out.length]=decodeutf8(s);
+					else out[out.length]=s;
+					codes=[];				
+				}
+				i++;
 			}
-			i++;
-		}
-		
-		s=String.fromCharCode.apply(null,codes);
-		if (enc=="utf8") out[out.length]=decodeutf8(s);
-		else out[out.length]=s;
+			
+			s=String.fromCharCode.apply(null,codes);
+			if (enc=="utf8") out[out.length]=decodeutf8(s);
+			else out[out.length]=s;
 
-		return out;
+			return out;			
+		}
 	}
 	var readStringArray = function(pos,blocksize,encoding,cb) {
-		//console.log("blocksize of string array",blocksize);
 		var that=this,out=null;
 		if (blocksize==0) return [];
 		encoding=encoding||'utf8';
 		var buffer=new Buffer(blocksize);
+
+		//if (blocksize>1000000) console.time("readstringarray");
 		fs.read(this.handle,buffer,0,blocksize,pos,function(err,len,buffer){
 			if (html5fs) {
 				readLog("stringArray",buffer.byteLength);
@@ -1968,7 +2023,8 @@ var Open=function(path,opts,cb) {
 			} else {
 				readLog("stringArray",buffer.length);
 				out=buffer.toString(encoding).split('\0');
-			} 	
+			}
+			//if (blocksize>1000000) console.timeEnd("readstringarray");
 			cb.apply(that,[out]);
 		});
 	}
@@ -2102,13 +2158,22 @@ var Open=function(path,opts,cb) {
 
 		if (html5fs) {
 			var fn=path;
-			if (path.indexOf("filesystem:")==0) fn=path.substr(path.lastIndexOf("/"));
-			fs.fs.root.getFile(fn,{},function(entry){
-			  entry.getMetadata(function(metadata) { 
-				that.size=metadata.size;
-				if (cb) setTimeout(cb.bind(that),0);
-				});
-			});
+			if (this.handle.file) {
+				//local file
+				fs.getFileSize(this.handle.file,function(size){
+					that.size=size;
+					if (cb) setTimeout(cb.bind(that),0);
+				})
+			} else if (fs&& fs.fs && fs.fs.root) {
+				if (path.indexOf("filesystem:")==0) fn=path.substr(path.lastIndexOf("/"));
+				//Google File system
+				fs.fs.root.getFile(fn,{},function(entry){
+				  entry.getMetadata(function(metadata) { 
+					that.size=metadata.size;
+					if (cb) setTimeout(cb.bind(that),0);
+					});
+				});				
+			}
 		} else {
 			var stat=fs.fstatSync(this.handle);
 			this.stat=stat;
@@ -4309,7 +4374,8 @@ var prepareEngineForSearch=function(engine,cb){
 }
 
 var openEngine=function(dbid_or_engine,cb,context) {
-	if (typeof dbid_or_engine=="string") {//browser only
+	var localfile=(typeof File!=="undefined" && dbid_or_engine.constructor==File);
+	if (typeof dbid_or_engine=="string" || localfile) {//browser only
 		var kde=require("ksana-database");
 
 		kde.open(dbid_or_engine,function(err,engine){
@@ -4476,7 +4542,7 @@ var toc=function(opts,cb,context) {
 		if (err) {
 			cb(err);
 		} else {
-			var tocname=res.engine.get("meta").toc;
+			var tocname=opts.tocname||res.engine.get("meta").toc;
 			res.engine.getTOC({tocname:tocname},function(data){
 				cb(0,{name:tocname,toc:data,hits:res.rawresult,tocname:tocname});
 			});
@@ -4519,7 +4585,8 @@ var fetch=function(opts,cb,context) {
 				var vpos=opts.vpos;
 				if (typeof vpos!="object") vpos=[vpos];
 				for (var i=0;i<vpos.length;i++) {
-					uti.push(res.engine.vpos2txtid(vpos[i]));
+					var u=res.engine.vpos2txtid(vpos[i]);
+					uti.push(u);
 				}
 			}
 			if (typeof uti!=="object") uti=[uti];
@@ -4612,27 +4679,46 @@ var filterField=function(items,regex,filterfunc) {
 
 var groupByField=function(db,rawresult,field,regex,filterfunc,cb) {
 	db.get(["fields",field],function(fields){
-		if (!rawresult||!rawresult.length) {
-			var matches=filterField(fields,regex,filterfunc);
-			cb(0,matches);
-		} else {
-			db.get(["fields",field+"_vpos"],function(fieldsvpos){
+
+		db.get([["fields",field+"_vpos"],["fields",field+"_depth"]],function(res){
+			var fieldsvpos=res[0],fieldsdepth=res[1];
+			if (!rawresult||!rawresult.length) {
+				var matches=filterField(fields,regex,filterfunc);
+				cb(0,matches,null,fieldsvpos);
+			} else {
 				var fieldhits= plist.groupbyposting2(rawresult, fieldsvpos);
-		    var matches=[],hits=[];
+				fieldhits.shift();
+		    var matches=[],hits=[],vpos=[];
 		    var reg=new RegExp(regex);
-		     filterfunc=filterfunc|| reg.test.bind(reg);
+		    filterfunc=filterfunc|| reg.test.bind(reg);
+		    var prevdepth=65535,inrange=false;
 		    for (var i=0;i<fieldhits.length;i++) {
 		      var fieldhit=fieldhits[i];
-		      if (!fieldhit || !fieldhit.length) continue;
-		      var item=txtid[txtid_invert[i]-1];
+		      var item=fields[i];
+
+		      //all depth less than prevdepth will considered in range.
 		      if (filterfunc(item,regex)) {
+		      	inrange=true;
+		      	if (prevdepth>fieldsdepth[i]) {
+		      		prevdepth=fieldsdepth[i];
+		      	}
+		      } else if (inrange) {
+		      	if (fieldsdepth[i]==prevdepth) {//turn off inrange
+		      		inrange=false;
+		      		prevdepth=65535;
+		      	}
+		      }
+
+		      if (!fieldhit || !fieldhit.length) continue;
+		      if (inrange) {
 		      	matches.push(item);
 		      	hits.push(fieldhit);
+		      	vpos.push(fieldhit[0]);
 		      }
 		    }		
-				cb(0,matches,hits);
-			});
-		}
+				cb(0,matches,hits,vpos);
+			};
+		});
 	});
 }
 
@@ -4709,7 +4795,16 @@ var fillHits=function(searchable,tofind,cb) {
 	});
 	taskqueue.shift()(0,{__empty:true});
 }
-
+var tryOpen=function(kdbid,cb){
+	if ((window.location.protocol==="file:" && typeof process==="undefined") 
+	|| typeof io==="undefined" ) {
+		cb("local file mode");
+		return;
+	}
+	kde.open(kdbid,function(err){
+		cb(err);
+	});
+}
 var renderHits=function(text,hits,func){
   var ex=0,out=[];
   hits=hits||[];
@@ -4725,11 +4820,34 @@ var renderHits=function(text,hits,func){
   return out;
 }  
 
+var get=function(dbname,key,cb) { //low level get
+	var db=kde.open(dbname,function(err,db){
+		if (err) {
+			cb(err);
+		} else {
+			db.get(key,cb);
+		}
+	});
+}
+var vpos2txtid=function(dbname,vpos,cb){
+	var db=kde.open(dbname,function(err,db){
+		if (err) cb(err);
+		else cb(0,db.vpos2txtid(vpos));
+	});
+}
+var txtid2vpos=function(dbname,txtid,cb){
+	var db=kde.open(dbname,function(err,db){
+		if (err) cb(err);
+		else cb(0,db.txtid2vpos(txtid));
+	});
+}
 var API={
 	next:next,
 	prev:prev,
 	nextUti:nextUti,
-	prevUti:prevUti,	
+	prevUti:prevUti,
+	vpos2txtid:vpos2txtid,
+	txtid2vpos:txtid2vpos,	
 	toc:toc,
 	fetch:fetch,
 	excerpt:excerpt,
@@ -4737,7 +4855,9 @@ var API={
 	filter:filter,
 	listkdb:listkdb,
 	fillHits:fillHits,
-	renderHits:renderHits
+	renderHits:renderHits,
+	tryOpen:tryOpen,
+	get:get
 }
 module.exports=API;
 },{"ksana-database":"ksana-database","ksana-search":"ksana-search","ksana-search/plist":20}]},{},[]);
